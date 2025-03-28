@@ -226,21 +226,391 @@ footer {
 
 .result-box {
   margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #f9f9f9;
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 6px;
   font-size: 14px;
-  white-space: pre-wrap;
-  word-break: break-word;
+  background-color: #f9f9f9;
+  border-left: 4px solid #ccc;
 }
 
 .result-success {
-  border-color: #2ecc71;
-  background-color: #e8f8f5;
+  border-left-color: #4caf50;
+  background-color: #e8f5e9;
 }
 
 .result-error {
-  border-color: #e74c3c;
+  border-left-color: #f44336;
+  background-color: #ffebee;
+}
+
+/* New Styles for OTT Platform Selection */
+.platform-indicator {
+  background-color: #e8f8f5;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  border-left: 4px solid #2ecc71;
+}
+
+.platform-indicator p {
+  color: #27ae60;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Movie Details Styles */
+#movie-detail-container {
+  margin-bottom: 20px;
+}
+
+.movie-poster {
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.movie-info-header {
+  margin-bottom: 15px;
+}
+
+.movie-info-header h3 {
+  font-size: 20px;
+  margin-bottom: 5px;
+  color: #2c3e50;
+}
+
+.movie-info-header .meta {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.movie-info-header .rating {
+  color: #f39c12;
+  font-weight: bold;
+}
+
+.movie-info-content {
+  margin-bottom: 15px;
+}
+
+.movie-info-content h4 {
+  font-size: 16px;
+  color: #34495e;
+  margin-bottom: 5px;
+}
+
+.movie-info-content p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.movie-info-section {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.streaming-links {
+  margin: 15px 0;
+}
+
+.streaming-service {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.streaming-service:hover {
+  background-color: #f9f9f9;
+  border-color: #3498db;
+}
+
+.streaming-service .platform-logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.streaming-service .platform-name {
+  font-weight: 500;
+}
+
+.streaming-service .subscription-type {
+  margin-left: auto;
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+/* Conversation Interface Styles */
+.conversation-container {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.conversation-history {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #f9f9f9;
+}
+
+.message {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  max-width: 85%;
+  position: relative;
+}
+
+.message.user {
+  background-color: #e1f5fe;
+  align-self: flex-end;
+  margin-left: auto;
+  border-bottom-right-radius: 2px;
+}
+
+.message.assistant {
+  background-color: #f5f5f5;
+  align-self: flex-start;
+  margin-right: auto;
+  border-bottom-left-radius: 2px;
+}
+
+.message-content {
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.conversation-input {
+  display: flex;
+  gap: 10px;
+}
+
+.conversation-input textarea {
+  flex-grow: 1;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 14px;
+  min-height: 60px;
+  resize: none;
+}
+
+.conversation-input button {
+  align-self: flex-end;
+  min-width: 80px;
+  height: 40px;
+}
+
+/* Platform Tag styles */
+.platform-tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 3px 8px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  border-radius: 12px;
+  background-color: #e1f5fe;
+  color: #0288d1;
+}
+
+/* Highlight for available on user's platform */
+.platform-available {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+/* Movie Card enhancements for platform availability */
+.movie-card .platforms {
+  margin-top: 8px;
+}
+
+.trailer-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.trailer-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Loading indicator for button */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+}
+
+.btn-loading:after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-top: -8px;
+  margin-left: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: white;
+  animation: spin 1s infinite linear;
+}
+
+/* New Debug UI for Platforms API */
+.debug-platforms-list {
+  margin-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #f8f8f8;
+}
+
+.debug-platforms-list ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.debug-platforms-list li {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.debug-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed #ddd;
+}
+
+.debug-section h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #7f8c8d;
+}
+
+.debug-section .debug-group {
+  margin-top: 15px;
+  border-left: 3px solid #e1e1e1;
+  padding-left: 10px;
+}
+
+.debug-section .debug-group h4 {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #34495e;
+}
+
+.debug-error-message {
   background-color: #fdedec;
+  border-left: 3px solid #e74c3c;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.debug-success-message {
+  background-color: #e8f8f5;
+  border-left: 3px solid #2ecc71;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.debug-info {
+  background-color: #f9f9f9;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 10px;
+  font-family: monospace;
+  font-size: 12px;
+  overflow-x: auto;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* No Results UI */
+.no-results-box {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.no-results-box h3 {
+  color: #e74c3c;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.no-results-box p {
+  margin-bottom: 20px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.no-results-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.no-results-actions .primary-btn {
+  margin-bottom: 5px;
+}
+
+.no-results-actions .secondary-btn {
+  background-color: #7f8c8d;
+}
+
+.no-results-actions .secondary-btn:hover {
+  background-color: #6c7a7a;
+}
+
+/* Test box styling */
+#test-box {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+#test-box h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+#test-box button {
+  margin-bottom: 10px;
 }

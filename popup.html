@@ -33,12 +33,20 @@
         </div>
         <button id="save-keys" class="primary-btn">Save Keys</button>
 
-        <div class="debug-section">
-          <h3>Debug Tools</h3>
-          <button id="test-rapidapi" class="secondary-btn">
-            Test RapidAPI Key
-          </button>
-          <div id="test-result" class="result-box hidden"></div>
+        <div id="test-box">
+          <h3>Debug Options</h3>
+          <div>
+            <button id="testRapidApi" class="secondary-btn">
+              Test RapidAPI Key
+            </button>
+            <div id="api-test-result" class="result-box hidden"></div>
+          </div>
+          <div>
+            <button id="testMovieSearch" class="secondary-btn">
+              Test Movie Search API
+            </button>
+            <div id="movie-search-test-result" class="result-box hidden"></div>
+          </div>
         </div>
       </div>
 
@@ -61,22 +69,72 @@
         </div>
       </div>
 
-      <div id="results-page" class="page hidden">
-        <h2>Movie Recommendations</h2>
-        <div id="movie-results"></div>
+      <!-- New OTT Selection Page - This comes before showing movies -->
+      <div id="ott-selection-page" class="page hidden">
+        <h2>Select Your Streaming Platforms</h2>
+        <p>Which streaming platforms do you have access to?</p>
+        <div id="ott-platform-list" class="checkbox-group"></div>
+        <div class="form-group">
+          <button id="filter-movies-btn" class="primary-btn">
+            Find Movies On My Platforms
+          </button>
+        </div>
       </div>
 
-      <div id="platforms-page" class="page hidden">
-        <h2>Select Your OTT Platforms</h2>
-        <div id="platform-list" class="checkbox-group"></div>
-        <button id="find-availability" class="primary-btn">
-          Find Where to Watch
-        </button>
+      <div id="results-page" class="page hidden">
+        <h2>Movie Recommendations</h2>
+        <p>Select a movie to see details:</p>
+        <div id="movie-results"></div>
+
+        <!-- Platform availability indicator -->
+        <div id="platform-availability" class="platform-indicator hidden">
+          <p>These recommendations are available on your selected platforms</p>
+        </div>
+
+        <!-- Button to get more recommendations if needed -->
+        <div class="form-group">
+          <button id="load-more-movies" class="secondary-btn hidden">
+            Show More Options
+          </button>
+        </div>
+      </div>
+
+      <div id="movie-detail-page" class="page hidden">
+        <h2>Movie Details</h2>
+        <div id="movie-detail-container">
+          <!-- Movie details will be inserted here -->
+        </div>
+        <div class="movie-actions">
+          <div id="trailer-container" class="form-group hidden">
+            <button id="watch-trailer-btn" class="primary-btn">
+              Watch Trailer
+            </button>
+          </div>
+          <div id="streaming-links" class="streaming-links">
+            <!-- Streaming links will be inserted here -->
+          </div>
+          <div class="form-group">
+            <button id="back-to-results" class="text-btn">
+              Back to Results
+            </button>
+          </div>
+        </div>
       </div>
 
       <div id="recommendation-page" class="page hidden">
-        <h2>Watch This!</h2>
+        <h2>Your Personalized Recommendation</h2>
         <div id="final-recommendation"></div>
+        <div class="conversation-container">
+          <h3>Ask Follow-up Questions</h3>
+          <div id="conversation-history" class="conversation-history"></div>
+          <div class="conversation-input">
+            <textarea
+              id="follow-up-input"
+              placeholder="Ask more about this movie..."
+            ></textarea>
+            <button id="send-follow-up" class="primary-btn">Send</button>
+          </div>
+        </div>
         <button id="new-search" class="secondary-btn">Start New Search</button>
       </div>
 
