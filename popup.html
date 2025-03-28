@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie Buddy</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Movie Buddy</h1>
+        <p>Your personal movie recommendation assistant</p>
+      </header>
+
+      <div id="setup-page" class="page">
+        <h2>API Setup</h2>
+        <div class="form-group">
+          <label for="gemini-key">Google Gemini API Key:</label>
+          <input
+            type="password"
+            id="gemini-key"
+            placeholder="Enter your Gemini API key"
+          />
+        </div>
+        <div class="form-group">
+          <label for="rapidapi-key">RapidAPI Key:</label>
+          <input
+            type="password"
+            id="rapidapi-key"
+            placeholder="Enter your RapidAPI key"
+          />
+        </div>
+        <button id="save-keys" class="primary-btn">Save Keys</button>
+
+        <div class="debug-section">
+          <h3>Debug Tools</h3>
+          <button id="test-rapidapi" class="secondary-btn">
+            Test RapidAPI Key
+          </button>
+          <div id="test-result" class="result-box hidden"></div>
+        </div>
+      </div>
+
+      <div id="search-page" class="page hidden">
+        <div class="form-group">
+          <label for="movie-prompt"
+            >What kind of movie would you like to watch?</label
+          >
+          <textarea
+            id="movie-prompt"
+            placeholder="e.g., I want a recommendation for a Sci-Fi movie"
+          ></textarea>
+        </div>
+        <button id="get-recommendations" class="primary-btn">
+          Get Recommendations
+        </button>
+        <div id="loading" class="hidden">
+          <div class="spinner"></div>
+          <p>Searching for the perfect movie...</p>
+        </div>
+      </div>
+
+      <div id="results-page" class="page hidden">
+        <h2>Movie Recommendations</h2>
+        <div id="movie-results"></div>
+      </div>
+
+      <div id="platforms-page" class="page hidden">
+        <h2>Select Your OTT Platforms</h2>
+        <div id="platform-list" class="checkbox-group"></div>
+        <button id="find-availability" class="primary-btn">
+          Find Where to Watch
+        </button>
+      </div>
+
+      <div id="recommendation-page" class="page hidden">
+        <h2>Watch This!</h2>
+        <div id="final-recommendation"></div>
+        <button id="new-search" class="secondary-btn">Start New Search</button>
+      </div>
+
+      <footer>
+        <button id="reset-keys" class="text-btn">Reset API Keys</button>
+      </footer>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Movie Buddy",
+  "version": "1.0",
+  "description": "Get personalized movie recommendations based on your preferences and available OTT platforms",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://ott-details.p.rapidapi.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
