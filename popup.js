@@ -233,39 +233,74 @@ document.addEventListener("DOMContentLoaded", () => {
   function displayPlatformOptions(platforms) {
     ottPlatformList.innerHTML = "";
 
-    platforms.forEach((platform) => {
-      const checkbox = document.createElement("div");
-      checkbox.className = "checkbox-item";
+    // Create container for OTT icons
+    const iconsContainer = document.createElement("div");
+    iconsContainer.className = "ott-icons-container";
 
+    // Define platform icon URLs - using placeholder SVGs with platform colors
+    const platformIcons = {
+      netflix:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/netflix.svg",
+      prime:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/amazon-prime-video.svg",
+      hotstar:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/hotstar.svg",
+      sonyliv:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sony-liv.svg",
+      // Default fallback icon
+      default: "https://cdn-icons-png.flaticon.com/512/3502/3502477.png",
+    };
+
+    platforms.forEach((platform) => {
       // Handle both the old format (id, name) and new format (label, value, short)
       const platformId = platform.id || platform.value || platform.short;
       const platformName = platform.name || platform.label;
 
-      checkbox.innerHTML = `
-        <input type="checkbox" id="platform-${platformId}" data-platform-id="${platformId}" value="${platformName}">
-        <label for="platform-${platformId}">${platformName}</label>
+      // Create platform icon element
+      const iconElement = document.createElement("div");
+      iconElement.className = "ott-icon";
+      iconElement.dataset.platformId = platformId;
+      iconElement.dataset.platformName = platformName;
+
+      // Determine icon URL
+      const iconUrl =
+        platformIcons[platformId.toLowerCase()] || platformIcons.default;
+
+      // Set inner HTML with icon and name
+      iconElement.innerHTML = `
+        <img src="${iconUrl}" alt="${platformName}">
+        <span>${platformName}</span>
       `;
 
-      ottPlatformList.appendChild(checkbox);
+      // Add click handler to toggle selection
+      iconElement.addEventListener("click", () => {
+        iconElement.classList.toggle("selected");
+      });
+
+      // Add to container
+      iconsContainer.appendChild(iconElement);
     });
+
+    // Add the icons container to the platform list
+    ottPlatformList.appendChild(iconsContainer);
   }
 
   // Function to filter movies based on selected platforms
   async function filterMoviesByPlatforms() {
-    // Get selected platforms
-    const checkboxes = document.querySelectorAll(
-      '#ott-platform-list input[type="checkbox"]:checked'
-    );
+    // Get selected platforms (now using the icon elements with 'selected' class)
+    const selectedIcons = document.querySelectorAll(".ott-icon.selected");
 
-    if (checkboxes.length === 0) {
+    if (selectedIcons.length === 0) {
       alert("Please select at least one streaming platform");
       return;
     }
 
     // Get both platform display names and underlying values
-    const platformNames = Array.from(checkboxes).map((cb) => cb.value);
-    const platformValues = Array.from(checkboxes).map(
-      (cb) => cb.dataset.platformId
+    const platformNames = Array.from(selectedIcons).map(
+      (icon) => icon.dataset.platformName
+    );
+    const platformValues = Array.from(selectedIcons).map(
+      (icon) => icon.dataset.platformId
     );
 
     // Store user's platform names for display
@@ -278,7 +313,24 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Platform IDs for API:", state.userPlatformIds);
 
     try {
-      showLoading(true);
+      // Add loading state to the filter button
+      filterMoviesBtn.disabled = true;
+      filterMoviesBtn.classList.add("btn-loading");
+      filterMoviesBtn.innerText = "Fetching Movies...";
+
+      // Create a spinner element in the OTT selection page for visibility
+      const spinnerContainer = document.createElement("div");
+      spinnerContainer.id = "ott-selection-spinner";
+      spinnerContainer.innerHTML =
+        '<div class="spinner"></div><p>Searching for movies on your platforms...</p>';
+      spinnerContainer.style.textAlign = "center";
+      spinnerContainer.style.margin = "20px 0";
+
+      // Add it after the platform list
+      ottPlatformList.parentNode.insertBefore(
+        spinnerContainer,
+        ottPlatformList.nextSibling
+      );
 
       // Add to conversation
       state.conversation.push({
@@ -444,6 +496,18 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(errorMessage);
       }
     } finally {
+      // Remove the spinner if it exists
+      const spinner = document.getElementById("ott-selection-spinner");
+      if (spinner) {
+        spinner.remove();
+      }
+
+      // Reset the filter button
+      filterMoviesBtn.disabled = false;
+      filterMoviesBtn.classList.remove("btn-loading");
+      filterMoviesBtn.innerText = "Find Movies on Your Platforms";
+
+      // Remove the general loading indicator in case it was shown
       showLoading(false);
     }
   }
@@ -537,8 +601,24 @@ document.addEventListener("DOMContentLoaded", () => {
     movieCard.className = "movie-card";
     movieCard.dataset.id = movie.imdbid;
 
+    // Define platform icon URLs - same as in displayPlatformOptions
+    const platformIcons = {
+      netflix:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/netflix.svg",
+      prime:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/amazon-prime-video.svg",
+      hotstar:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/hotstar.svg",
+      sonyliv:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sony-liv.svg",
+      // Default fallback icon
+      default: "https://cdn-icons-png.flaticon.com/512/3502/3502477.png",
+    };
+
     // Check if this movie is available on user's platforms
     const availablePlatforms = [];
+    const platformDetails = [];
+
     if (movie.streamingInfo) {
       // We need to check both by platform name and ID/value since the streaming info
       // might use different keys than what we get from the platform API
@@ -558,6 +638,11 @@ document.addEventListener("DOMContentLoaded", () => {
           if (movie.streamingInfo[variant]) {
             if (!availablePlatforms.includes(platformName)) {
               availablePlatforms.push(platformName);
+              platformDetails.push({
+                name: platformName,
+                id: platformId,
+                data: movie.streamingInfo[variant],
+              });
             }
             break;
           }
@@ -565,12 +650,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Create platform tags HTML
+    // Create platform icons HTML
     let platformsHtml = "";
     if (availablePlatforms.length > 0) {
-      platformsHtml = '<div class="platforms">';
-      for (const platform of availablePlatforms) {
-        platformsHtml += `<span class="platform-tag platform-available">${platform}</span>`;
+      platformsHtml = '<div class="ott-badges">';
+      for (const platform of platformDetails) {
+        const iconUrl =
+          platformIcons[platform.id.toLowerCase()] || platformIcons.default;
+        platformsHtml += `
+          <div class="ott-badge" title="Available on ${platform.name}">
+            <img src="${iconUrl}" alt="${platform.name}">
+          </div>
+        `;
       }
       platformsHtml += "</div>";
     }
@@ -630,12 +721,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to display detailed movie view
   function displayMovieDetailView(movieDetail) {
-    // Create streaming links if available
-    let streamingLinksHtml = "";
-    const streamingInfo = movieDetail.streamingAvailability || {};
+    // Define platform icon URLs - same as in other functions
+    const platformIcons = {
+      netflix:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/netflix.svg",
+      prime:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/amazon-prime-video.svg",
+      hotstar:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/hotstar.svg",
+      sonyliv:
+        "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sony-liv.svg",
+      // Default fallback icon
+      default: "https://cdn-icons-png.flaticon.com/512/3502/3502477.png",
+    };
 
     // Clear streaming links container
     streamingLinksContainer.innerHTML = "";
+    streamingLinksContainer.className = "movie-streaming-links";
+
+    // Create a container for the streaming links
+    const streamingInfo = movieDetail.streamingAvailability || {};
 
     // Filter available links to user's platforms
     const userStreamingPlatforms = [];
@@ -666,17 +771,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (platformData) {
+        const iconUrl =
+          platformIcons[platformId.toLowerCase()] || platformIcons.default;
+
         const link = document.createElement("a");
         link.href = platformData.url;
-        link.className = "streaming-service";
+        link.className = "movie-streaming-link";
         link.target = "_blank";
         link.rel = "noopener noreferrer";
 
         link.innerHTML = `
-          <span class="platform-name">${platformName}</span>
-          <span class="subscription-type">${
-            platformData.type || "Subscription"
-          }</span>
+          <img src="${iconUrl}" alt="${platformName}">
+          <span>${platformName}</span>
         `;
 
         streamingLinksContainer.appendChild(link);
@@ -684,8 +790,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Add heading for streaming options if any are available
+    if (userStreamingPlatforms.length > 0) {
+      const streamingHeader = document.createElement("h4");
+      streamingHeader.textContent = "Watch Now:";
+      streamingHeader.style.marginBottom = "10px";
+      streamingLinksContainer.prepend(streamingHeader);
+    }
+
+    // Prepare movie poster if available
+    let posterHtml = "";
+    if (movieDetail.imageurl && movieDetail.imageurl.length > 0) {
+      posterHtml = `<img src="${movieDetail.imageurl[0]}" alt="${movieDetail.title}" class="movie-poster">`;
+    }
+
     // Build the movie detail view
     const movieHTML = `
+      ${posterHtml}
       <div class="movie-info-header">
         <h3>${movieDetail.title}</h3>
         <div class="meta">
@@ -713,6 +834,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     movieDetailContainer.innerHTML = movieHTML;
 
+    // Show trailer container and make trailer button visible by default
+    trailerContainer.classList.remove("hidden");
+    watchTrailerBtn.textContent = "Watch Trailer";
+    watchTrailerBtn.disabled = false;
+
     // Add streaming availability notice to conversation
     let availabilityMessage = "";
     if (userStreamingPlatforms.length > 0) {
@@ -727,71 +853,102 @@ document.addEventListener("DOMContentLoaded", () => {
 
     state.conversation.push({
       role: "assistant",
-      content:
-        availabilityMessage +
-        ` Would you like to see its trailer or learn more about the film?`,
+      content: `${availabilityMessage} Here's some information about the movie:\n\n- Released: ${
+        movieDetail.released
+      }\n- Genre: ${movieDetail.genre}\n- IMDb Rating: ${
+        movieDetail.imdbrating
+      }\n\n${
+        movieDetail.synopsis || "No synopsis available."
+      }\n\nDo you want to know more about this movie?`,
     });
   }
 
-  // Function to get and display movie trailer
-  async function getMovieTrailer(title, year) {
+  // Function to play movie trailer directly in the UI
+  async function playMovieTrailer() {
     try {
-      // Extract year from the full release date
-      const releaseYear = year.split("-")[0] || year;
+      // Disable the button and show loading state
+      watchTrailerBtn.disabled = true;
+      watchTrailerBtn.textContent = "Loading Trailer...";
+      watchTrailerBtn.classList.add("btn-loading");
 
-      const response = await sendMessageToBackground({
-        action: "getMovieTrailer",
-        movieTitle: title,
-        year: releaseYear,
-        rapidApiKey: state.rapidApiKey,
-      });
-
-      if (!response.success) {
-        // Just hide the trailer button on error, no need to alert
-        trailerContainer.classList.add("hidden");
-        return;
+      if (!state.trailerData) {
+        // If we don't have trailer data yet, fetch it
+        await getMovieTrailer(
+          state.selectedMovie.title,
+          state.selectedMovie.released
+        );
       }
 
-      // If we have a trailer URL, show the button
-      if (response.trailer && response.trailer.url) {
-        state.currentTrailerUrl = response.trailer.url;
-        trailerContainer.classList.remove("hidden");
-      } else {
+      // If we have trailer data with a YouTube URL
+      if (state.trailerData && state.trailerData.url) {
+        // Fix the YouTube URL for proper embedding
+        let trailerUrl = state.trailerData.url;
+
+        // Check if it's a YouTube URL
+        if (
+          trailerUrl.includes("youtube.com") ||
+          trailerUrl.includes("youtu.be")
+        ) {
+          // Format for embedding - handle different URL formats
+          if (trailerUrl.includes("watch?v=")) {
+            // Convert from watch URL to embed URL
+            const videoId = trailerUrl.split("watch?v=")[1].split("&")[0];
+            trailerUrl = `https://www.youtube.com/embed/${videoId}`;
+          } else if (trailerUrl.includes("youtu.be/")) {
+            // Convert from shortened URL to embed URL
+            const videoId = trailerUrl.split("youtu.be/")[1].split("?")[0];
+            trailerUrl = `https://www.youtube.com/embed/${videoId}`;
+          } else if (!trailerUrl.includes("/embed/")) {
+            // If it's not already an embed URL but some other format
+            console.warn("Unrecognized YouTube URL format:", trailerUrl);
+            // Try to extract video ID with regex
+            const videoIdMatch = trailerUrl.match(
+              /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i
+            );
+            if (videoIdMatch && videoIdMatch[1]) {
+              trailerUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`;
+            }
+          }
+        }
+
+        console.log("Using trailer URL:", trailerUrl);
+
+        // Create a container for the trailer
+        const trailerEmbedContainer = document.createElement("div");
+        trailerEmbedContainer.className = "trailer-container";
+
+        // Create the iframe for the YouTube embed
+        trailerEmbedContainer.innerHTML = `
+          <iframe
+            width="100%"
+            height="200"
+            src="${trailerUrl}"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        `;
+
+        // Insert the trailer before the streaming links
+        const insertBeforeElement = streamingLinksContainer;
+        insertBeforeElement.parentNode.insertBefore(
+          trailerEmbedContainer,
+          insertBeforeElement
+        );
+
+        // Hide the watch trailer button as we're now showing the trailer
         trailerContainer.classList.add("hidden");
+      } else {
+        // If no trailer found, update the button
+        watchTrailerBtn.textContent = "Trailer Not Available";
       }
     } catch (error) {
-      console.error("Error getting trailer:", error);
-      trailerContainer.classList.add("hidden");
-    }
-  }
-
-  // Function to play the movie trailer
-  function playMovieTrailer() {
-    if (!state.currentTrailerUrl) {
-      alert("Trailer not available");
-      return;
-    }
-
-    // If the trailer is a YouTube embed URL, create an iframe
-    if (state.currentTrailerUrl.includes("youtube.com/embed/")) {
-      // Create the iframe element
-      const iframe = document.createElement("iframe");
-      iframe.src = state.currentTrailerUrl;
-      iframe.allow =
-        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-      iframe.allowFullscreen = true;
-
-      // Create a container for the trailer
-      const trailerDiv = document.createElement("div");
-      trailerDiv.className = "trailer-container";
-      trailerDiv.appendChild(iframe);
-
-      // Replace the trailer button with the iframe
-      trailerContainer.innerHTML = "";
-      trailerContainer.appendChild(trailerDiv);
-    } else {
-      // If it's a regular URL, open it in a new tab
-      window.open(state.currentTrailerUrl, "_blank");
+      console.error("Error playing trailer:", error);
+      watchTrailerBtn.textContent = "Trailer Not Available";
+    } finally {
+      // Re-enable the button
+      watchTrailerBtn.disabled = false;
+      watchTrailerBtn.classList.remove("btn-loading");
     }
   }
 
@@ -1067,5 +1224,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ... existing code ...
+  }
+
+  // Function to get movie trailer data
+  async function getMovieTrailer(title, year) {
+    try {
+      // Extract year from the full release date
+      const releaseYear = year.split("-")[0] || year;
+
+      const response = await sendMessageToBackground({
+        action: "getMovieTrailer",
+        movieTitle: title,
+        year: releaseYear,
+        rapidApiKey: state.rapidApiKey,
+      });
+
+      if (!response.success) {
+        console.error("Failed to get trailer:", response.error);
+        state.trailerData = null;
+        return null;
+      }
+
+      // Make sure the trailer URL is in a valid format
+      if (response.trailer && response.trailer.url) {
+        // Log the original URL for debugging
+        console.log("Original trailer URL:", response.trailer.url);
+
+        // Some basic validation to ensure it's a working URL
+        if (!response.trailer.url.startsWith("http")) {
+          console.error("Invalid trailer URL format:", response.trailer.url);
+          response.trailer.url = null;
+        }
+      }
+
+      // Store the trailer data in state
+      state.trailerData = response.trailer;
+      return response.trailer;
+    } catch (error) {
+      console.error("Error getting trailer:", error);
+      state.trailerData = null;
+      return null;
+    }
   }
 });

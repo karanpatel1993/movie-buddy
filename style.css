@@ -463,6 +463,8 @@ footer {
 .btn-loading {
   position: relative;
   color: transparent !important;
+  pointer-events: none;
+  opacity: 0.8;
 }
 
 .btn-loading:after {
@@ -478,6 +480,15 @@ footer {
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-top-color: white;
   animation: spin 1s infinite linear;
+}
+
+/* Add a special style for the filter button when loading */
+#filter-movies-btn.btn-loading:after {
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  border-width: 3px;
 }
 
 /* New Debug UI for Platforms API */
@@ -613,4 +624,131 @@ footer {
 
 #test-box button {
   margin-bottom: 10px;
+}
+
+/* OTT Platform Icons Styles */
+.ott-icons-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 15px 0;
+  justify-content: center;
+}
+
+.ott-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid #e0e0e0;
+  padding: 5px;
+  position: relative;
+}
+
+.ott-icon:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.ott-icon.selected {
+  border-color: #3498db;
+  background-color: #ebf7fd;
+}
+
+.ott-icon.selected:after {
+  content: "✓";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #3498db;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.ott-icon img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.ott-icon span {
+  font-size: 10px;
+  text-align: center;
+  margin-top: 5px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Movie card platform availability */
+.movie-card .ott-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.movie-card .ott-badge {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.movie-card .ott-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Movie detail streaming options */
+.movie-streaming-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.movie-streaming-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px;
+  width: 80px;
+  transition: all 0.2s ease;
+}
+
+.movie-streaming-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  border-color: #3498db;
+}
+
+.movie-streaming-link img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-bottom: 5px;
+}
+
+.movie-streaming-link span {
+  font-size: 11px;
+  text-align: center;
 }
